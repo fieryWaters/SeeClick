@@ -19,6 +19,14 @@ Release Plans:
 News: SeeClick is accepted by ACL 2024. Other following works [OS-Atlas](https://arxiv.org/abs/2410.23218), [OS-Genesis](https://arxiv.org/abs/2412.19723) are also released !
 
 
+## Quick Training (untested, WIP)
+
+Data converted to LlamaFactory format. Training command:
+```bash
+cd training/LLaMA-Factory
+uvx --python 3.11 --from "git+https://github.com/hiyouga/LLaMA-Factory.git[torch,metrics,deepspeed]" llamafactory-cli train examples/train_lora/seeclick_lora_sft.yaml --nproc_per_node 4
+```
+
 ***
 ### GUI Grounding Benchmark: *ScreenSpot*
 

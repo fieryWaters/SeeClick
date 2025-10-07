@@ -239,6 +239,7 @@ print("Num of web_loca_bbox: " + str(len(web_loca_bbox)))
 print("Num of web_ocr_point: " + str(len(web_ocr_point)))
 print("Num of web_ocr_bbox: " + str(len(web_ocr_bbox)))
 
+"""
 # llava 150k
 llava_data = []
 with open(llava_json, "r") as f:
@@ -281,6 +282,9 @@ for i, conversation in tqdm(enumerate(llava_data)):
     llava_150k.append({"id": "llava_{}".format(i), "conversations": conversations_new})
 
 print("Num of llava: " + str(len(llava_150k)))
+"""
+llava_150k = []  # Empty list since we're skipping LLaVA
+print("Num of llava: " + str(len(llava_150k)) + " (SKIPPED - no COCO images)")
 
 random.shuffle(mobile_text_2_point)
 mobile_text_2_point = mobile_text_2_point[:]

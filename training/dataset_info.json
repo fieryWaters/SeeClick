@@ -716,7 +716,7 @@
     "folder": "python"
   },
   "seeclick": {
-    "file_name": "sft_train_llamafactory.json",
+    "file_name": "/global/cfs/cdirs/m3930/jwaters8/SeeClick/data/sft_train_llamafactory.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages",

@@ -13,10 +13,11 @@ lora_target: all
 
 ### dataset
 dataset: seeclick
+dataset_dir: /global/u1/j/jwaters8/git-repos/SeeClick/training
 template: qwen2_vl
 cutoff_len: 768
 overwrite_cache: true
-preprocessing_num_workers: 60
+preprocessing_num_workers: 4
 dataloader_num_workers: 4
 
 ### output
@@ -43,7 +44,7 @@ resume_from_checkpoint: null
 gradient_checkpointing: true
 
 ### deepspeed
-deepspeed: examples/deepspeed/ds_z2_config.json
+# deepspeed: examples/deepspeed/ds_z2_config.json
 
 ### eval
 # val_size: 0.1

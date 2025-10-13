@@ -10,25 +10,23 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Process data for pre-training in LlamaFactory format.")
 
-parser.add_argument("--mobile_imgs", required=True, help="Path to the directory containing mobile images.")
-parser.add_argument("--web_imgs", required=True, help="Path to the directory containing web images.")
-parser.add_argument("--widgetcap_json", required=True, help="Path to the widget captioning JSON file.")
-parser.add_argument("--ricosca_json", required=True, help="Path to the RICOSCA JSON file.")
-parser.add_argument("--screensum_json", required=True, help="Path to the screen captioning JSON file.")
-parser.add_argument("--web_json", required=True, help="Path to the seeclick web JSON file.")
-parser.add_argument("--coco_imgs", required=True, help="Path to the directory coco train2017 images.")
-parser.add_argument("--llava_json", required=True, help="Path to the LLaVA JSON file.")
+parser.add_argument("--data_dir", default="/global/cfs/cdirs/m3930/$USER/SeeClick/data",
+                    help="Base data directory (default: /global/cfs/cdirs/m3930/$USER/SeeClick/data)")
 
 args = parser.parse_args()
 
-mobile_imgs = args.mobile_imgs
-web_imgs = args.web_imgs
-widgetcap_json = args.widgetcap_json
-ricosca_json = args.ricosca_json
-screensum_json = args.screensum_json
-web_json = args.web_json
-coco_imgs = args.coco_imgs
-llava_json = args.llava_json
+# Expand $USER if present
+data_dir = os.path.expandvars(args.data_dir)
+
+# Auto-construct paths from data_dir
+mobile_imgs = os.path.join(data_dir, "mobile/combined")
+web_imgs = os.path.join(data_dir, "web/cpfs01/user/chengkanzhi/seeclick_web_imgs")
+widgetcap_json = os.path.join(data_dir, "mobile/widget_captioning.json")
+ricosca_json = os.path.join(data_dir, "mobile/ricosca.json")
+screensum_json = os.path.join(data_dir, "mobile/screen_summarization.json")
+web_json = os.path.join(data_dir, "web/seeclick_web.json")
+coco_imgs = None
+llava_json = None
 
 # widget captioning & RICOSCA grounding
 widgetcap_train = json.load(open(widgetcap_json, "r"))
@@ -41,7 +39,7 @@ for data_name, data in mobile_data_loca.items():
     print("Processing " + str(data_name))
     for i, item in tqdm(enumerate(data)):
         img_filename = item["img_filename"]
-        img_path = os.path.join("mobile/combined", img_filename)
+        img_path = os.path.join(mobile_imgs, img_filename)
 
         goal = item["instruction"]
         click_point = bbox_2_point(item["bbox"])
@@ -80,7 +78,7 @@ i = 0
 for i, item in tqdm(enumerate(screensum_train)):
 
     img_filename = item["img_filename"]
-    img_path = os.path.join("mobile/combined", img_filename)
+    img_path = os.path.join(mobile_imgs, img_filename)
 
     captions = item["captions"]
     random.shuffle(captions)
@@ -104,7 +102,7 @@ mobile_widgetcap = []
 print("Processing widgetcap")
 for i, item in tqdm(enumerate(widgetcap_train)):
     img_filename = item["img_filename"]
-    img_path = os.path.join("mobile/combined", img_filename)
+    img_path = os.path.join(mobile_imgs, img_filename)
 
     goal = item["instruction"]
     click_point = bbox_2_point(item["bbox"])
@@ -132,7 +130,7 @@ print("Processing web")
 for i, item in tqdm(enumerate(web_train)):
 
     img_filename = item["img_filename"]
-    img_path = "web_subset/cpfs01/user/chengkanzhi/seeclick_web_imgs_part/" + img_filename
+    img_path = os.path.join(web_imgs, img_filename)
 
     eles_valid = []
     for ele in item["elements"]:
@@ -268,5 +266,6 @@ llava_150k = llava_150k[:]
 
 sft_train = mobile_text_2_point + mobile_text_2_bbox + mobile_screensum + mobile_widgetcap + web_loca_point + web_loca_bbox + web_ocr_point + web_ocr_bbox + llava_150k
 print("Num of sft: " + str(len(sft_train)))
-json.dump(sft_train, open("../data/sft_train_llamafactory.json", "w"), indent=2)
-print("Saved to ../data/sft_train_llamafactory.json")
+output_path = os.path.join(data_dir, "sft_train_llamafactory.json")
+json.dump(sft_train, open(output_path, "w"), indent=2)
+print("Saved to " + output_path)
